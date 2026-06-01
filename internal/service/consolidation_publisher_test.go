@@ -31,6 +31,13 @@ func (f *fakeConsolidationStore) GetRecord(_ context.Context, _, _ string) (core
 	return f.record, nil
 }
 
+func (f *fakeConsolidationStore) GetRecordIncludingHidden(_ context.Context, _, _ string) (corememory.MemoryRecord, error) {
+	if f.getErr != nil {
+		return corememory.MemoryRecord{}, f.getErr
+	}
+	return f.record, nil
+}
+
 func (f *fakeConsolidationStore) WriteRecord(context.Context, corememory.WriteRecordInput) (corememory.WriteRecordResult, error) {
 	return corememory.WriteRecordResult{}, nil
 }
