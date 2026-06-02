@@ -12,8 +12,6 @@ import (
 	corememory "github.com/costa92/llm-agent-memory-contract/contract"
 )
 
-const agentInferredImportanceThreshold = 0.7
-
 type consolidationStore interface {
 	corememory.RecordStore
 	corememory.Promoter
@@ -60,7 +58,7 @@ func (p *ConsolidationPublisher) Publish(ctx context.Context, msg corememory.Out
 	if p.metrics != nil {
 		p.metrics.RecordPromoteAttempt(current.TenantID)
 	}
-	if !shouldPromote(current) {
+	if !corememory.PromotionEligible(current) {
 		if p.metrics != nil {
 			p.metrics.RecordPromoteRejected(current.TenantID)
 		}
@@ -69,7 +67,7 @@ func (p *ConsolidationPublisher) Publish(ctx context.Context, msg corememory.Out
 
 	dedupeResult, err := p.store.ResolveDedupe(ctx, corememory.ResolveDedupeInput{
 		TenantID:  current.TenantID,
-		DedupeKey: dedupeKey(current),
+		DedupeKey: corememory.DedupeKey(current),
 		Candidate: current,
 	})
 	if err != nil {
@@ -118,34 +116,6 @@ func isConsolidationEvent(eventType string) bool {
 	}
 }
 
-func shouldPromote(record corememory.MemoryRecord) bool {
-	switch record.Source {
-	case "user_saved":
-		return true
-	case "agent_inferred":
-		return record.Importance >= agentInferredImportanceThreshold
-	default:
-		return false
-	}
-}
-
-func dedupeKey(record corememory.MemoryRecord) string {
-	return hashParts(
-		record.TenantID,
-		record.UserID,
-		record.Category,
-		record.ProjectID,
-		normalizedDedupeContent(record),
-	)
-}
-
-func normalizedDedupeContent(record corememory.MemoryRecord) string {
-	if strings.TrimSpace(record.NormalizedContentHash) != "" {
-		return strings.TrimSpace(record.NormalizedContentHash)
-	}
-	return collapseWhitespace(strings.ToLower(record.Content))
-}
-
 func promotionIdempotencyKey(tenantID, memoryID, eventID string) string {
 	return hashParts(tenantID, memoryID, eventID, "promote")
 }
@@ -154,7 +124,7 @@ func promoteReason(record corememory.MemoryRecord) string {
 	if record.Source == "user_saved" {
 		return "user_saved_default"
 	}
-	if record.Source == "agent_inferred" && record.Importance >= agentInferredImportanceThreshold {
+	if record.Source == "agent_inferred" && record.Importance >= corememory.PromoteImportanceThreshold {
 		return "agent_inferred_importance_threshold"
 	}
 	return "worker_default_rule"
@@ -163,10 +133,6 @@ func promoteReason(record corememory.MemoryRecord) string {
 func hashParts(parts ...string) string {
 	sum := sha256.Sum256([]byte(strings.Join(parts, "\x00")))
 	return hex.EncodeToString(sum[:])
-}
-
-func collapseWhitespace(s string) string {
-	return strings.Join(strings.Fields(strings.TrimSpace(s)), " ")
 }
 
 var _ interface{ Publish(context.Context, corememory.OutboxMessage) error } = (*ConsolidationPublisher)(nil)
