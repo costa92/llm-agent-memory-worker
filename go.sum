@@ -1,7 +1,7 @@
 github.com/costa92/llm-agent-memory-contract v0.2.0 h1:+t/+C3RvPbVeG4HX/mB8bNsCnq7qza5TdQ6ueircd48=
 github.com/costa92/llm-agent-memory-contract v0.2.0/go.mod h1:zwhC36/+dQSSHKLDncdlggVoIhJeZEC8uHtUV/M+J7g=
-github.com/costa92/llm-agent-memory-postgres v0.1.0 h1:n8oyQsygk/eqVH21hCFqb7Ep3NwfwASb/5Nfs5z4hAA=
-github.com/costa92/llm-agent-memory-postgres v0.1.0/go.mod h1:r1S0mCabElRAV3nv+PGmyfmPhHmeBdaKBj4rUUdjlLw=
+github.com/costa92/llm-agent-memory-postgres v0.1.1 h1:P+r8OkDk1I52bwZ98hKfQYZ5NRH/+2QyjSA82ZmaQNw=
+github.com/costa92/llm-agent-memory-postgres v0.1.1/go.mod h1:r1S0mCabElRAV3nv+PGmyfmPhHmeBdaKBj4rUUdjlLw=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
